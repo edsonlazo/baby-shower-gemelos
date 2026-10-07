@@ -70,6 +70,7 @@ h1 span{display:block}
 .n-girl{color:#b0505d}.n-boy{color:#2f6ea6}.amp{color:var(--ink);opacity:.55;font-size:.8em}
 .lbl-name{font-family:var(--display)}
 .lbl-top{font-family:var(--body);font-weight:500}
+.pass{margin:0;font-size:clamp(.9rem,2vh,1.05rem);font-weight:500;background:var(--chip);border:1.5px dashed var(--chip-line);border-radius:999px;padding:.4em 1em}
 .tag{margin:0;max-width:100%;box-sizing:border-box;background:var(--bar);color:var(--bar-text);font-size:clamp(.92rem,2vh,1.15rem);
   padding:.7em clamp(.9em,4vw,1.5em);letter-spacing:.01em}
 @media (max-width:420px){.tag{font-size:.88rem}}
@@ -3396,9 +3397,10 @@ html.locked,html.locked body{overflow:hidden}
   <p class="tag">Dos pequeños milagros están por llegar.</p>
   <p class="when">Sábado 07 de noviembre<span class="sep"> · </span><span class="time">16:00</span></p>
   <p class="where">Salón de Eventos Madero VIP</p>
+  <p class="pass" id="pass" hidden></p>
   <div class="actions">
     <svg class="m-x m-duck" viewBox="0 0 104 80" aria-hidden="true"><path d="M84 50l16-16-1 24z" fill="#f7d586"/><ellipse cx="54" cy="57" rx="41" ry="19" fill="#f7d586"/><circle cx="32" cy="30" r="17" fill="#f7d586"/><path d="M17 30c-8-1.5-13.5 1-14.5 4 4 3.5 10.5 3.5 15.5 0z" fill="#e0a780"/><circle cx="27" cy="25" r="2.8" fill="#3b2a1e"/><circle cx="35" cy="34" r="3.4" fill="#f4abab" opacity=".85"/><path d="M48 53c9-9 26-7 30 4-9 7-22 7-30-4z" fill="#e8c06a"/></svg><svg class="m-x m-rattle" viewBox="0 0 60 124" aria-hidden="true"><rect x="26" y="50" width="8" height="50" rx="4" fill="#f9eedf"/><circle cx="30" cy="108" r="11" fill="none" stroke="#f7d586" stroke-width="7"/><rect x="21" y="52" width="18" height="8" rx="3.5" fill="#f7d586"/><circle cx="30" cy="29" r="26" fill="#f4abab"/><circle cx="20" cy="21" r="4" fill="#fff"/><circle cx="37" cy="17" r="3" fill="#fff"/><circle cx="40" cy="34" r="4.5" fill="#fff"/><circle cx="24" cy="39" r="3" fill="#fff"/><path d="M14 16a20 20 0 0 1 10-8" stroke="#fff" stroke-width="3" stroke-linecap="round" fill="none" opacity=".6"/></svg>
-    <a class="btn btn-primary" href="https://wa.link/3s3p1e" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C7 3 3 6.6 3 11c0 2.2 1 4.2 2.7 5.6L5 21l4.2-2.2c.9.2 1.8.3 2.8.3 5 0 9-3.6 9-8s-4-8.1-9-8.1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Confirmá tu asistencia</a>
+    <a class="btn btn-primary" id="rsvp" href="https://wa.link/3s3p1e" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C7 3 3 6.6 3 11c0 2.2 1 4.2 2.7 5.6L5 21l4.2-2.2c.9.2 1.8.3 2.8.3 5 0 9-3.6 9-8s-4-8.1-9-8.1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>Confirmá tu asistencia</a>
     <div class="row">
       <a class="btn btn-ghost" href="https://maps.app.goo.gl/29PExj8hv9bp8aN46" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.3 7-12a7 7 0 1 0-14 0c0 5.7 7 12 7 12z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.6" fill="currentColor"/></svg>Ver ubicación</a>
       <a class="btn btn-ghost" href="https://calendar.google.com/calendar/render?action=TEMPLATE&amp;text=Twin+Baby+Shower&amp;dates=20261107T160000/20261107T190000&amp;ctz=America/La_Paz&amp;location=Sal%C3%B3n+de+Eventos+Madero+VIP&amp;details=Dos+peque%C3%B1os+milagros+est%C3%A1n+por+llegar.%0AUbicaci%C3%B3n:+https://maps.app.goo.gl/29PExj8hv9bp8aN46%0AConfirm%C3%A1+tu+asistencia:+https://wa.link/3s3p1e" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 10h17M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Agregar al calendario</a>
@@ -3479,6 +3481,19 @@ html.locked,html.locked body{overflow:hidden}
     if(!ctx) return;
     if(document.hidden) ctx.suspend(); else if(wantOn) ctx.resume();
   });
+
+
+  /* ---- RSVP: ?guests=N personaliza el mensaje de WhatsApp ---- */
+  (function(){
+    var WA_NUMBER='59175336813'; /* número con código de país, solo dígitos, ej. 5917xxxxxxx */
+    var q=new URLSearchParams(location.search), g=parseInt(q.get('guests')||q.get('invitados'),10);
+    if(!(g>=1&&g<=50)) g=0;
+    var pass=document.getElementById('pass'), a=document.getElementById('rsvp');
+    if(g&&pass){pass.textContent='Invitación válida para '+g+(g===1?' persona':' personas');pass.hidden=false;}
+    var msg='¡Hola! Confirmo mi asistencia al Baby Shower de Emilia y Agustín 💛💙';
+    if(g) msg+= g===1?' (1 persona)':' Somos '+g+' personas.';
+    if(WA_NUMBER&&a) a.href='https://api.whatsapp.com/send?phone='+WA_NUMBER+'&text='+encodeURIComponent(msg);
+  })();
 
   /* ---- opening ---- */
   var opened=false;
